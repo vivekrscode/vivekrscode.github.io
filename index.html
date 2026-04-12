@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intel India Marathon 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+           INTEL MARATHON 2026 — WALL DISPLAY SYSTEM (20FT)
+        ============================================================ */
+        :root {
+            --intel-blue:    #0068B5;
+            --intel-cyan:    #00C7FD;
+            --bg-deep:       #03070E;
+            --bg-elevated:   rgba(255,255,255,0.07);
+            --border-subtle: rgba(255,255,255,0.1);
+            --text-primary:  #EFF6FF;
+            --text-secondary:#94A3B8;
+            --text-muted:    #475569;
+            --green:         #10B981;
+            --red:           #EF4444;
+            --gold:          #F59E0B;
+        }
+
+        /* ---- Per-card color themes ---- */
+        .card-blue {
+            --accent:     #60CAFF;
+            --accent-rgb: 96, 202, 255;
+            --card-bg:    linear-gradient(155deg, rgba(0,70,170,0.50) 0%, rgba(0,25,80,0.65) 100%);
+            --border-col: rgba(96,202,255,0.45);
+            --icon-bg:    rgba(0,104,181,0.35);
+            --icon-border:rgba(96,202,255,0.3);
+        }
+        .card-amber {
+            --accent:     #FFC94A;
+            --accent-rgb: 255,201,74;
+            --card-bg:    linear-gradient(155deg, rgba(185,95,0,0.48) 0%, rgba(100,40,0,0.62) 100%);
+            --border-col: rgba(255,201,74,0.45);
+            --icon-bg:    rgba(245,158,11,0.25);
+            --icon-border:rgba(255,201,74,0.3);
+        }
+        .card-green {
+            --accent:     #38E2A0;
+            --accent-rgb: 56,226,160;
+            --card-bg:    linear-gradient(155deg, rgba(5,130,75,0.45) 0%, rgba(2,65,38,0.62) 100%);
+            --border-col: rgba(56,226,160,0.45);
+            --icon-bg:    rgba(16,185,129,0.25);
+            --icon-border:rgba(56,226,160,0.3);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            height: 100dvh; width: 100dvw;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 15%, rgba(0,90,170,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(0,199,253,0.06) 0%, transparent 55%);
+            pointer-events: none; z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ---- Header ---- */
+        header {
+            position: relative; z-index: 10;
+            background: linear-gradient(100deg, #002D60 0%, #004080 50%, #0058A8 100%);
+            border-bottom: 1px solid rgba(0,199,253,0.3);
+            padding: 0 3vw;
+            height: 11vh;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 6px 50px rgba(0,30,100,0.7);
+        }
+        .header-brand { display: flex; align-items: center; gap: 1.5vw; }
+        .intel-badge {
+            background: #FFFFFF; color: #0068B5;
+            font-weight: 900; font-size: 2.2vw;
+            padding: 0.45vh 1vw; border-radius: 9px;
+            letter-spacing: 3px; line-height: 1; text-transform: lowercase;
+        }
+        .header-divider { width: 1px; height: 4.5vh; background: rgba(255,255,255,0.2); }
+        .header-title {
+            font-size: 2.8vw; font-weight: 900;
+            letter-spacing: 5px; text-transform: uppercase; color: #FFFFFF;
+        }
+        .header-title em { font-style: normal; color: var(--intel-cyan); }
+        .header-right { display: flex; align-items: center; gap: 2vw; }
+        .event-tag {
+            font-size: 1.05vw; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.42);
+        }
+        .live-chip {
+            display: flex; align-items: center; gap: 0.6vw;
+            background: rgba(239,68,68,0.14); border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 100px; padding: 0.6vh 1.4vw;
+            font-size: 1.05vw; font-weight: 700; letter-spacing: 2px; color: #FCA5A5;
+        }
+        .live-dot {
+            width: 0.7vw; height: 0.7vw;
+            background: #F87171; border-radius: 50%;
+            animation: blink-red 1.2s ease-in-out infinite;
+        }
+        @keyframes blink-red {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px #F87171; }
+            50%       { opacity: 0.2; box-shadow: none; }
+        }
+
+        /* ---- Main Grid ---- */
+        main {
+            position: relative; z-index: 5;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2vw;
+            padding: 1.8vh 2.5vw 2vh;
+            align-content: stretch;
+        }
+
+        /* ---- Card ---- */
+        .category-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 2px solid var(--border-col);
+            border-radius: 26px;
+            padding: 2.8vh 2.8vw 2.4vh;
+            display: flex; flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            box-shadow: 0 10px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: border-color 0.4s, box-shadow 0.4s;
+        }
+
+        /* Thick accent top bar */
+        .category-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent 0%, var(--accent) 35%, rgba(var(--accent-rgb),0.6) 65%, transparent 100%);
+            opacity: 0.85;
+        }
+
+        /* Corner ambient glow blob */
+        .category-card::after {
+            content: '';
+            position: absolute; top: -40px; right: -40px;
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(var(--accent-rgb),0.12) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        /* Running — pulsing border glow */
+        .category-card.running {
+            box-shadow:
+                0 0 0 2px rgba(var(--accent-rgb),0.6),
+                0 10px 60px rgba(0,0,0,0.55),
+                0 0 80px rgba(var(--accent-rgb),0.15);
+            animation: card-pulse 2.2s ease-in-out infinite;
+        }
+        .category-card.running::before {
+            height: 6px; opacity: 1;
+            animation: shimmer 2.5s linear infinite;
+            background-size: 200%;
+        }
+
+        /* Finished — gold override */
+        .category-card.finished {
+            border-color: rgba(245,158,11,0.55);
+            box-shadow: 0 0 0 2px rgba(245,158,11,0.4), 0 10px 60px rgba(0,0,0,0.55), 0 0 60px rgba(245,158,11,0.08);
+            animation: none;
+        }
+        .category-card.finished::before {
+            background: linear-gradient(90deg, transparent, var(--gold) 35%, rgba(245,158,11,0.5) 65%, transparent);
+            height: 5px; opacity: 1; animation: none;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes card-pulse {
+            0%, 100% { box-shadow: 0 0 0 2px rgba(var(--accent-rgb),0.6), 0 10px 60px rgba(0,0,0,0.55), 0 0 80px rgba(var(--accent-rgb),0.15); }
+            50%       { box-shadow: 0 0 0 4px rgba(var(--accent-rgb),0.9), 0 10px 60px rgba(0,0,0,0.55), 0 0 120px rgba(var(--accent-rgb),0.28); }
+        }
+
+        /* ---- Card Top Row ---- */
+        .card-top {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.9vw; width: 100%;
+        }
+
+        .card-icon {
+            flex-shrink: 0;
+            width: 4vw; height: 4vw;
+            background: var(--icon-bg);
+            border: 1px solid var(--icon-border);
+            border-radius: 12px;
+            display: grid; place-items: center;
+            font-size: 2vw;
+        }
+
+        .category-title {
+            font-size: 2.4vw; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: #FFFFFF;
+            text-shadow: 0 2px 24px rgba(var(--accent-rgb),0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-pill {
+            flex-shrink: 0;
+            font-size: 0.85vw; font-weight: 700;
+            letter-spacing: 1.2px; text-transform: uppercase;
+            padding: 0.45vh 0.9vw;
+            border-radius: 100px; border: 1px solid;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .status-pill.idle   { color: var(--text-muted); border-color: var(--text-muted); background: transparent; }
+        .status-pill.active { color: #fff; border-color: rgba(var(--accent-rgb),0.7); background: rgba(var(--accent-rgb),0.22); animation: status-pulse 1.8s ease-in-out infinite; }
+        .status-pill.done   { color: var(--gold); border-color: rgba(245,158,11,0.55); background: rgba(245,158,11,0.12); }
+
+        @keyframes status-pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.45; }
+        }
+
+        /* ---- TIMER — hero element for 20ft wall ---- */
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 6vw;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            line-height: 1;
+            text-align: center;
+            width: 100%;
+            color: var(--accent);
+            text-shadow:
+                0 0 40px rgba(var(--accent-rgb),0.55),
+                0 0 90px rgba(var(--accent-rgb),0.2);
+            transition: text-shadow 0.5s, opacity 0.5s;
+            padding: 0.8vh 0;
+        }
+
+        .timer-display.running-glow {
+            text-shadow:
+                0 0 50px rgba(var(--accent-rgb),0.9),
+                0 0 110px rgba(var(--accent-rgb),0.4),
+                0 0 180px rgba(var(--accent-rgb),0.15);
+            animation: timer-breathe 2.5s ease-in-out infinite;
+        }
+        .timer-display.finished-dim {
+            opacity: 0.4;
+            text-shadow: none;
+            animation: none;
+        }
+        @keyframes timer-breathe {
+            0%, 100% { transform: scale(1); }
+            50%       { transform: scale(1.012); }
+        }
+
+        /* ---- Start / End Time Badges ---- */
+        .time-info-row {
+            display: flex; gap: 1.5vw;
+            align-items: center; justify-content: center;
+            width: 100%; min-height: 4.5vh;
+        }
+
+        .time-badge {
+            display: none;
+            align-items: center; gap: 0.7vw;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(var(--accent-rgb),0.25);
+            border-radius: 12px;
+            padding: 0.8vh 1.6vw;
+            animation: badge-in 0.35s ease;
+        }
+        .time-badge.visible { display: flex; }
+
+        @keyframes badge-in {
+            from { opacity: 0; transform: translateY(10px) scale(0.92); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .badge-dot {
+            width: 0.65vw; height: 0.65vw;
+            border-radius: 50%; flex-shrink: 0;
+        }
+        .start-badge .badge-dot { background: var(--green); box-shadow: 0 0 10px var(--green); }
+        .end-badge   .badge-dot { background: var(--red);   box-shadow: 0 0 10px var(--red); }
+
+        .badge-label {
+            font-size: 1.05vw; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.45);
+        }
+        .badge-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.55vw; font-weight: 700;
+        }
+        .start-badge .badge-value { color: #6EE7B7; }
+        .end-badge   .badge-value { color: #FCA5A5; }
+
+        /* ---- Divider ---- */
+        .card-rule {
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.35), transparent);
+            flex-shrink: 0;
+        }
+
+        /* ---- Controls ---- */
+        .controls {
+            display: flex; justify-content: center; align-items: center;
+            gap: 1.3vw; width: 100%;
+        }
+
+        button {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5vw; font-weight: 700;
+            padding: 1.5vh 3.2vw;
+            border: none; border-radius: 14px;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            color: #FFFFFF;
+            display: inline-flex; align-items: center; gap: 0.5vw;
+            position: relative; overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.2s;
+        }
+        button::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 55%);
+            border-radius: inherit; pointer-events: none;
+        }
+        button:hover  { transform: translateY(-2px); }
+        button:active { transform: scale(0.97); }
+
+        .start-btn {
+            background: linear-gradient(135deg, #047857 0%, #10B981 100%);
+            box-shadow: 0 5px 25px rgba(16,185,129,0.45);
+        }
+        .start-btn:hover { box-shadow: 0 9px 36px rgba(16,185,129,0.65); }
+
+        .end-btn {
+            background: linear-gradient(135deg, #B91C1C 0%, #EF4444 100%);
+            box-shadow: 0 5px 25px rgba(239,68,68,0.45);
+            display: none;
+        }
+        .end-btn:hover { box-shadow: 0 9px 36px rgba(239,68,68,0.65); }
+
+        .finished-badge {
+            display: none;
+            align-items: center; gap: 0.7vw;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8vw; font-weight: 900;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: var(--gold);
+            text-shadow: 0 0 25px rgba(245,158,11,0.5);
+        }
+        .finished-badge.visible { display: flex; }
+
+        /* ---- Footer ---- */
+        footer {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(100deg, #002D5C 0%, #003C77 40%, #0055A0 100%);
+            border-top: 1px solid rgba(0, 199, 253, 0.25);
+            padding: 0 2.8vw;
+            height: 7.5vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -4px 35px rgba(0, 45, 92, 0.7);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 0.7vw;
+            font-size: 0.85vw;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .footer-left-dot {
+            width: 4px; height: 4px;
+            background: var(--intel-cyan);
+            border-radius: 50%;
+        }
+
+        .footer-clock-group {
+            display: flex;
+            align-items: center;
+            gap: 2.5vw;
+        }
+        .clock-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.1vh;
+        }
+        .clock-label {
+            font-size: 0.6vw;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+        }
+        .clock-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35vw;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 1px;
+        }
+        .clock-sep {
+            width: 1px;
+            height: 3.2vh;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .footer-right {
+            font-size: 0.85vw;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1px;
+        }
+        .footer-right span { color: var(--intel-cyan); font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <!-- ======= HEADER ======= -->
+    <header>
+        <div class="header-brand">
+            <div class="intel-badge">intel</div>
+            <div class="header-divider"></div>
+            <div class="header-title">India Marathon <em>2026</em></div>
+        </div>
+        <div class="header-right">
+            <div class="event-tag">Official Race Dashboard</div>
+            <div class="live-chip">
+                <div class="live-dot"></div>
+                Live
+            </div>
+        </div>
+    </header>
+
+    <!-- ======= MAIN CARDS ======= -->
+    <main>
+
+        <!-- 10K -->
+        <div class="category-card card-blue" id="card-10k">
+            <div class="card-top">
+                <div class="card-icon">🏃</div>
+                <div class="category-title">10K Run</div>
+                <div class="status-pill idle" id="status-10k">Standby</div>
+            </div>
+
+            <div class="timer-display" id="display-10k">00:00:00</div>
+
+            <div class="time-info-row">
+                <div class="time-badge start-badge" id="start-badge-10k">
+                    <div class="badge-dot"></div>
+                    <span class="badge-label">Started</span>
+                    <span class="badge-value" id="start-time-10k">—</span>
+                </div>
+                <div class="time-badge end-badge" id="end-badge-10k">
+                    <div class="badge-dot"></div>
+                    <span class="badge-label">Ended</span>
+                    <span class="badge-value" id="end-time-10k">—</span>
+                </div>
+            </div>
+
+            <div class="card-rule"></div>
+
+            <div class="controls">
+                <button class="start-btn" onclick="startTimer('10k')">▶&nbsp; Start Race</button>
+                <button class="end-btn"   onclick="endTimer('10k')">⏹&nbsp; End Race</button>
+                <div class="finished-badge" id="badge-10k">🏆&nbsp; Race Completed</div>
+            </div>
+        </div>
+
+        <!-- 5K -->
+        <div class="category-card card-amber" id="card-5k">
+            <div class="card-top">
+                <div class="card-icon">🏅</div>
+                <div class="category-title">5K Run</div>
+                <div class="status-pill idle" id="status-5k">Standby</div>
+            </div>
+
+            <div class="timer-display" id="display-5k">00:00:00</div>
+
+            <div class="time-info-row">
+                <div class="time-badge start-badge" id="start-badge-5k">
+                    <div class="badge-dot"></div>
+                    <span class="badge-label">Started</span>
+                    <span class="badge-value" id="start-time-5k">—</span>
+                </div>
+                <div class="time-badge end-badge" id="end-badge-5k">
+                    <div class="badge-dot"></div>
+                    <span class="badge-label">Ended</span>
+                    <span class="badge-value" id="end-time-5k">—</span>
+                </div>
+            </div>
+
+            <div class="card-rule"></div>
+
+            <div class="controls">
+                <button class="start-btn" onclick="startTimer('5k')">▶&nbsp; Start Race</button>
+                <button class="end-btn"   onclick="endTimer('5k')">⏹&nbsp; End Race</button>
+                <div class="finished-badge" id="badge-5k">🏆&nbsp; Race Completed</div>
+            </div>
+        </div>
+
+        <!-- 3K Walkathon -->
+        <div class="category-card card-green" id="card-3k">
+            <div class="card-top">
+                <div class="card-icon">🚶</div>
+                <div class="category-title">3K Walk </div>
+                <div class="status-pill idle" id="status-3k">Standby</div>
+            </div>
+
+            <div class="timer-display" id="display-3k">00:00:00</div>
+
+            <div class="time-info-row">
+                <div class="time-badge start-badge" id="start-badge-3k">
+                    <div class="badge-dot"></div>
+                    <span class="badge-label">Started</span>
+                    <span class="badge-value" id="start-time-3k">—</span>
+                </div>
+                <div class="time-badge end-badge" id="end-badge-3k">
+                    <div class="badge-dot"></div>
+                    <span class="badge-label">Ended</span>
+                    <span class="badge-value" id="end-time-3k">—</span>
+                </div>
+            </div>
+
+            <div class="card-rule"></div>
+
+            <div class="controls">
+                <button class="start-btn" onclick="startTimer('3k')">▶&nbsp; Start Race</button>
+                <button class="end-btn"   onclick="endTimer('3k')">⏹&nbsp; End Race</button>
+                <div class="finished-badge" id="badge-3k">🏆&nbsp; Race Completed</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ======= FOOTER ======= -->
+    <footer>
+        <div class="footer-left">
+            <div class="footer-left-dot"></div>
+            Intel India Marathon 2026
+        </div>
+
+        <div class="footer-clock-group">
+            <div class="clock-item">
+                <span class="clock-label">Day</span>
+                <span class="clock-value" id="current-day">—</span>
+            </div>
+            <div class="clock-sep"></div>
+            <div class="clock-item">
+                <span class="clock-label">Date</span>
+                <span class="clock-value" id="current-date">—</span>
+            </div>
+            <div class="clock-sep"></div>
+            <div class="clock-item">
+                <span class="clock-label">Current Time</span>
+                <span class="clock-value" id="current-time">—</span>
+            </div>
+        </div>
+
+        <div class="footer-right">Powered by <span>Intel®</span></div>
+    </footer>
+
+    <script>
+        /* =============================================
+           LIVE CLOCK
+        ============================================= */
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('current-day').textContent =
+                now.toLocaleDateString('en-US', { weekday: 'long' });
+            document.getElementById('current-date').textContent =
+                now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('current-time').textContent =
+                now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function nowTime() {
+            return new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            });
+        }
+
+        /* =============================================
+           STOPWATCH LOGIC
+        ============================================= */
+        const timers = {
+            '10k': { interval: null, startEpoch: 0, running: false },
+            '5k':  { interval: null, startEpoch: 0, running: false },
+            '3k':  { interval: null, startEpoch: 0, running: false }
+        };
+
+        function padTwo(n) { return String(n).padStart(2, '0'); }
+
+        function formatElapsed(ms) {
+            const s = Math.floor(ms / 1000);
+            return `${padTwo(Math.floor(s / 3600))}:${padTwo(Math.floor((s % 3600) / 60))}:${padTwo(s % 60)}`;
+        }
+
+        function startTimer(cat) {
+            if (timers[cat].running) return;
+
+            const card    = document.getElementById(`card-${cat}`);
+            const display = document.getElementById(`display-${cat}`);
+
+            // Record start wall-clock time
+            document.getElementById(`start-time-${cat}`).textContent = nowTime();
+            document.getElementById(`start-badge-${cat}`).classList.add('visible');
+
+            // Status pill
+            const pill = document.getElementById(`status-${cat}`);
+            pill.textContent = 'Running';
+            pill.className   = 'status-pill active';
+
+            // Card state
+            card.classList.add('running');
+            display.classList.add('running-glow');
+
+            // Buttons
+            card.querySelector('.start-btn').style.display = 'none';
+            card.querySelector('.end-btn').style.display   = 'inline-flex';
+
+            // Tick
+            timers[cat].startEpoch = Date.now();
+            timers[cat].running    = true;
+            timers[cat].interval   = setInterval(() => {
+                display.textContent = formatElapsed(Date.now() - timers[cat].startEpoch);
+            }, 200);
+        }
+
+        function endTimer(cat) {
+            if (!timers[cat].running) return;
+
+            clearInterval(timers[cat].interval);
+            timers[cat].running = false;
+
+            const card    = document.getElementById(`card-${cat}`);
+            const display = document.getElementById(`display-${cat}`);
+
+            // Record end wall-clock time
+            document.getElementById(`end-time-${cat}`).textContent = nowTime();
+            document.getElementById(`end-badge-${cat}`).classList.add('visible');
+
+            // Status pill
+            const pill = document.getElementById(`status-${cat}`);
+            pill.textContent = 'Finished';
+            pill.className   = 'status-pill done';
+
+            // Card state
+            card.classList.remove('running');
+            card.classList.add('finished');
+            display.classList.remove('running-glow');
+            display.classList.add('finished-dim');
+
+            // Buttons → badge
+            card.querySelector('.end-btn').style.display = 'none';
+            document.getElementById(`badge-${cat}`).classList.add('visible');
+        }
+    </script>
+</body>
+</html>
