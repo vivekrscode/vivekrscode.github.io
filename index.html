@@ -692,5 +692,102 @@
             document.getElementById(`badge-${cat}`).classList.add('visible');
         }
     </script>
+
+    style>
+    /* Fit HH:MM:SS.ffffff inside each race card. */
+    .timer-display {
+        font-size: min(2.5vw, 5vh);
+        letter-spacing: 0;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Keep both wall-clock badges visible when a race finishes. */
+    .time-info-row { flex-direction: column; gap: 0.5vh; }
+
+    @media (max-width: 700px) {
+        body { height: auto; min-height: 100dvh; overflow: auto; }
+        main { grid-template-columns: 1fr; }
+        .category-card { min-height: 280px; gap: 20px; }
+        .timer-display { font-size: min(7vw, 48px); }
+    }
+</style>
+
+<script>
+    (() => {
+        const races = {};
+
+        function formatElapsed(ms) {
+            const totalMicroseconds = Math.floor(ms * 1000);
+            const totalSeconds = Math.floor(totalMicroseconds / 1000000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor(totalSeconds / 60) % 60).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            const fraction = String(totalMicroseconds % 1000000).padStart(6, '0');
+            return `${hours}:${minutes}:${seconds}.${fraction}`;
+        }
+
+        for (const cat of ['10k', '5k', '3k']) {
+            races[cat] = { running: false, startedAt: 0, frame: null };
+            const display = document.getElementById(`display-${cat}`);
+            display.textContent = '00:00:00.000000';
+            display.title = 'Hours:minutes:seconds.microseconds';
+        }
+
+        window.startTimer = function (cat) {
+            const race = races[cat];
+            if (!race || race.running) return;
+
+            race.startedAt = performance.now();
+            race.running = true;
+
+            const card = document.getElementById(`card-${cat}`);
+            const display = document.getElementById(`display-${cat}`);
+            document.getElementById(`start-time-${cat}`).textContent = nowTime();
+            document.getElementById(`start-badge-${cat}`).classList.add('visible');
+
+            const pill = document.getElementById(`status-${cat}`);
+            pill.textContent = 'Running';
+            pill.className = 'status-pill active';
+            card.classList.add('running');
+            display.classList.add('running-glow');
+            card.querySelector('.start-btn').style.display = 'none';
+            card.querySelector('.end-btn').style.display = 'inline-flex';
+
+            function tick() {
+                if (!race.running) return;
+                display.textContent = formatElapsed(performance.now() - race.startedAt);
+                race.frame = requestAnimationFrame(tick);
+            }
+            tick();
+        };
+
+        window.endTimer = function (cat) {
+            const race = races[cat];
+            if (!race || !race.running) return;
+
+            const elapsed = performance.now() - race.startedAt;
+            race.running = false;
+            cancelAnimationFrame(race.frame);
+
+            const card = document.getElementById(`card-${cat}`);
+            const display = document.getElementById(`display-${cat}`);
+            display.textContent = formatElapsed(elapsed);
+            document.getElementById(`end-time-${cat}`).textContent = nowTime();
+            document.getElementById(`end-badge-${cat}`).classList.add('visible');
+
+            const pill = document.getElementById(`status-${cat}`);
+            pill.textContent = 'Finished';
+            pill.className = 'status-pill done';
+            card.classList.remove('running');
+            card.classList.add('finished');
+            display.classList.remove('running-glow');
+            display.classList.add('finished-dim');
+            card.querySelector('.end-btn').style.display = 'none';
+            document.getElementById(`badge-${cat}`).classList.add('visible');
+        };
+    })();
+</script>
+    
 </body>
 </html>
