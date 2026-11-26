@@ -1,0 +1,66 @@
+/* Shared tokens, buttons, modal, toast — used by board + control */
+:root{
+  --u: min(1vw, 1.7778vh);
+  --intel-blue:#0068B5; --intel-cyan:#00C7FD;
+  --bg:#000;
+  --text:#F8FAFC; --text-2:#CBD5E1; --text-3:#94A3B8;
+  --green:#22C55E; --red:#EF4444; --gold:#FBBF24; --amber:#F59E0B;
+  --font-ui:'Inter','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  --font-num:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace;
+}
+.theme-blue { --accent:#4FC3FF; --accent-rgb:79,195,255;  --card-top:rgba(0,90,200,.55); --card-bot:rgba(0,28,90,.75); }
+.theme-amber{ --accent:#FFC23D; --accent-rgb:255,194,61;  --card-top:rgba(190,100,0,.55); --card-bot:rgba(90,38,0,.75); }
+.theme-green{ --accent:#34E39C; --accent-rgb:52,227,156;  --card-top:rgba(5,140,80,.50);  --card-bot:rgba(2,58,34,.75); }
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{ font-family:var(--font-ui); background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+[hidden]{ display:none !important; }
+
+.intel-badge{ background:#fff; color:var(--intel-blue); font-weight:900; line-height:1.1; letter-spacing:.05em; }
+
+.btn{
+  font-family:var(--font-ui); font-weight:800; font-size:14px; letter-spacing:.06em; text-transform:uppercase;
+  color:#fff; border:0; border-radius:10px; padding:10px 16px; cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap;
+  transition:transform .12s, filter .15s, box-shadow .2s, opacity .2s;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.btn:hover{ filter:brightness(1.12); }
+.btn:active{ transform:scale(.97); }
+.btn:focus-visible{ outline:3px solid var(--intel-cyan); outline-offset:2px; }
+.btn:disabled{ opacity:.35; cursor:not-allowed; filter:grayscale(.6); transform:none; }
+.btn-start  { background:linear-gradient(135deg,#047857,#10B981); box-shadow:0 4px 20px rgba(16,185,129,.4); }
+.btn-end,
+.btn-danger { background:linear-gradient(135deg,#B91C1C,#EF4444); box-shadow:0 4px 20px rgba(239,68,68,.4); }
+.btn-primary{ background:linear-gradient(135deg,#0050A0,#0071C5); box-shadow:0 4px 20px rgba(0,113,197,.4); }
+.btn-gold   { background:linear-gradient(135deg,#B45309,#F59E0B); box-shadow:0 4px 20px rgba(245,158,11,.35); }
+.btn-ghost  { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.28); }
+
+.modal-backdrop{ position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.72); }
+.modal{
+  width:min(540px,100%); padding:24px 26px;
+  background:#0B1526; border:1px solid rgba(255,255,255,.18); border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7); animation:modal-in .18s ease-out;
+}
+@keyframes modal-in{ from{ opacity:0; transform:translateY(8px) scale(.98); } to{ opacity:1; transform:none; } }
+.modal h3{ font-size:20px; font-weight:800; margin-bottom:10px; }
+.modal .m-msg{ font-size:15px; line-height:1.6; color:var(--text-2); white-space:pre-line; }
+.modal .m-actions{ display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; margin-top:22px; }
+
+.toasts{ position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:120; display:flex; flex-direction:column; gap:8px; width:min(520px,92vw); }
+.toast{
+  padding:12px 16px; border-radius:10px; font-size:15px; font-weight:600; line-height:1.4;
+  background:#0B1526; border:1px solid rgba(255,255,255,.2); box-shadow:0 10px 30px rgba(0,0,0,.6);
+  transition:opacity .3s, transform .3s;
+}
+.toast.out{ opacity:0; transform:translateY(8px); }
+.toast-ok   { border-color:rgba(34,197,94,.6);  }
+.toast-warn { border-color:rgba(245,158,11,.7); }
+.toast-error{ border-color:rgba(239,68,68,.8); background:#2A0C0C; }
+
+kbd{
+  display:inline-block; min-width:1.8em; padding:0 .45em; text-align:center;
+  font-family:var(--font-num); font-size:.85em; font-weight:700; color:#fff;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3); border-bottom-width:2px; border-radius:5px;
+}

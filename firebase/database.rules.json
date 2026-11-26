@@ -1,0 +1,27 @@
+{
+  "rules": {
+    "operators": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+    "events": {
+      "$eventId": {
+        ".read": true,
+        ".write": "auth != null && root.child('operators').child(auth.uid).val() === true",
+        "races": {
+          "$raceId": {
+            ".validate": "$raceId.matches(/^[A-Za-z0-9_-]{1,32}$/) && newData.hasChildren(['status'])",
+            "status":    { ".validate": "newData.isString() && newData.val().matches(/^(waiting|running|finished)$/)" },
+            "startedAt": { ".validate": "newData.isNumber() && newData.val() <= now + 60000" },
+            "endedAt":   { ".validate": "newData.isNumber() && newData.val() <= now + 60000" },
+            "flagOff":   { ".validate": "newData.isString() && newData.val().matches(/^([0-9][0-9]:[0-9][0-9])?$/)" },
+            "$other":    { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}
